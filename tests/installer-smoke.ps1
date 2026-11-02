@@ -17,9 +17,17 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 $failures = 0
+# On GitHub Actions every failure is also reported as an annotation, so it shows on the run's page.
+function Report([string] $message) {
+    if ($env:GITHUB_ACTIONS) { Write-Host "::error title=Installer smoke test::$message" }
+}
 function Check([bool] $condition, [string] $what) {
     if ($condition) { Write-Host "  ok    $what" }
-    else { Write-Host "  FAIL  $what" -ForegroundColor Red; $script:failures++ }
+    else { Write-Host "  FAIL  $what" -ForegroundColor Red; Report $what; $script:failures++ }
+}
+trap {
+    Report "$($_.Exception.Message) (line $($_.InvocationInfo.ScriptLineNumber))"
+    break
 }
 
 function Run([string] $exe, [string[]] $arguments) {
