@@ -2,6 +2,7 @@
 # Toolchain: MSYS2 UCRT64 GCC (mingw-w64). Run from the repository root:
 #
 #   mingw32-make              MarkLite.exe
+#   mingw32-make test         build and run the unit tests
 #   mingw32-make clean        remove all build output
 #
 # build.bat runs the same targets from a normal Command Prompt.
@@ -52,9 +53,22 @@ SIZE_OPT = aipanel ai clipimage dialogs findbar format json settings tabs theme 
 $(patsubst %,$(BUILD)/app/%.o,$(SIZE_OPT)): OPT = -Os -ffunction-sections -fdata-sections
 RES_OBJ  = $(BUILD)/app.res.o
 
-.PHONY: all clean scintilla
+# ---------------------------------------------------------------- unit tests
+# The tests link the app's formatting, editor styling, theme, settings and JSON code and drive a real
+# (hidden) Scintilla control. tests/stubs.cpp stands in for the few main window services they use.
+TEST_SRC     = $(wildcard tests/*.cpp)
+TEST_OBJ     = $(patsubst tests/%.cpp,$(BUILD)/tests/%.o,$(TEST_SRC))
+TEST_APP_OBJ = $(patsubst %,$(BUILD)/app/%.o,format editor theme settings json)
+TESTS        = $(BUILD)/tests.exe
+
+.PHONY: all clean scintilla tests test
 
 all: $(TARGET)
+
+tests: $(TESTS)
+
+test: $(TESTS)
+	./$(TESTS)
 
 scintilla: $(SCI_LIB)
 
@@ -91,6 +105,14 @@ $(MD4C_OBJ): $(MD4C)/md4c.c $(MD4C)/md4c.h
 $(RES_OBJ): res/app.rc res/app.manifest res/app.ico src/resource.h $(VERSION_H)
 	@mkdir -p $(dir $@)
 	$(WINDRES) -I src -I $(BUILD) -O coff res/app.rc -o $@
+
+# ---------------------------------------------------------------- test rules
+$(BUILD)/tests/%.o: tests/%.cpp $(wildcard tests/*.h) $(APP_HDR) $(VERSION_H)
+	@mkdir -p $(dir $@)
+	$(CXX) $(APPFLAGS) -Isrc -c $< -o $@
+
+$(TESTS): $(TEST_OBJ) $(TEST_APP_OBJ) $(SCI_LIB)
+	$(CXX) -static -municode -mconsole -o $@ $(TEST_OBJ) $(TEST_APP_OBJ) $(SCI_LIB) $(LIBS)
 
 clean:
 	rm -rf $(BUILD) $(TARGET)
