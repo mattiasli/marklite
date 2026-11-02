@@ -30,6 +30,13 @@ trap {
     break
 }
 
+# The default value of a registry key, or $null if the key or the value doesn't exist.
+function RegDefault([string] $key) {
+    $item = Get-Item -LiteralPath $key -ErrorAction SilentlyContinue
+    if ($item) { return $item.GetValue('') }
+    return $null
+}
+
 function Run([string] $exe, [string[]] $arguments) {
     $p = Start-Process -FilePath $exe -ArgumentList $arguments -Wait -PassThru -WindowStyle Hidden
     return $p.ExitCode
@@ -56,7 +63,7 @@ Write-Host "Setup $version, $(if ($AllUsers) { 'all users' } else { 'current use
 # "Open with" may already know another MarkLite.exe, such as a portable copy. Setup must leave that
 # entry alone. If there is none, a stand-in is created for the test and removed at the end.
 $appKey = "$hive\Software\Classes\Applications\MarkLite.exe"
-$foreignCommand = (Get-ItemProperty "$appKey\shell\open\command" -ErrorAction SilentlyContinue).'(default)'
+$foreignCommand = RegDefault "$appKey\shell\open\command"
 $madeForeign = $false
 if (-not $foreignCommand) {
     $foreignCommand = '"C:\Portable\MarkLite.exe" "%1"'
@@ -92,14 +99,14 @@ Check (Test-Path $startMenu) "Start menu shortcut exists"
 if (Test-Path $startMenu) { Check ($shell.CreateShortcut($startMenu).TargetPath -eq $exe) "Start menu shortcut points at MarkLite.exe" }
 Check (Test-Path $desktop) "desktop shortcut exists"
 
-$command = (Get-ItemProperty "$progId\shell\open\command" -ErrorAction SilentlyContinue).'(default)'
+$command = RegDefault "$progId\shell\open\command"
 Check ($command -eq "`"$exe`" `"%1`"") "MarkLite.Markdown open command is registered"
 foreach ($ext in '.md', '.markdown') {
     $owp = Get-ItemProperty "$hive\Software\Classes\$ext\OpenWithProgids" -ErrorAction SilentlyContinue
     Check ($null -ne $owp -and $owp.PSObject.Properties.Name -contains 'MarkLite.Markdown') "$ext lists MarkLite under Open with"
 }
 $apps = Get-ItemProperty "$hive\Software\RegisteredApplications" -ErrorAction SilentlyContinue
-Check ($null -ne $apps -and $apps.MarkLite -eq 'Software\MarkLite\Capabilities') "MarkLite is listed in Default apps"
+Check ($null -ne $apps -and $apps.PSObject.Properties['MarkLite'] -and $apps.MarkLite -eq 'Software\MarkLite\Capabilities') "MarkLite is listed in Default apps"
 
 Write-Host "reinstall over the existing installation, without the desktop shortcut"
 $code = Run $setupPath @('--silent', $scopeArg, "`"--dir=$dir`"", '--no-desktop-shortcut')
@@ -132,7 +139,7 @@ $owp = Get-ItemProperty "$hive\Software\Classes\.md\OpenWithProgids" -ErrorActio
 Check ($null -eq $owp -or -not ($owp.PSObject.Properties.Name -contains 'MarkLite.Markdown')) ".md no longer lists MarkLite"
 $apps = Get-ItemProperty "$hive\Software\RegisteredApplications" -ErrorAction SilentlyContinue
 Check ($null -eq $apps -or -not ($apps.PSObject.Properties.Name -contains 'MarkLite')) "Default apps entry is gone"
-$after = (Get-ItemProperty "$appKey\shell\open\command" -ErrorAction SilentlyContinue).'(default)'
+$after = RegDefault "$appKey\shell\open\command"
 Check ($after -eq $foreignCommand) "another MarkLite.exe under Open with is left alone"
 if ($madeForeign) { Remove-Item $appKey -Recurse -Force }
 
