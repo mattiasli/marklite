@@ -1,0 +1,100 @@
+---
+import { Image } from 'astro:assets';
+import icon from '../assets/icon.png';
+import Icon from './Icon.astro';
+import { DOWNLOAD_URL, REPO_URL } from '../site';
+---
+
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="/" aria-label="MarkLite home">
+      <Image src={icon} alt="" width={30} height={30} densities={[1, 2, 3]} loading="eager" />
+      <span>MarkLite</span>
+    </a>
+    <nav aria-label="Main">
+      <ul>
+        <li class="hide-sm"><a href="/#features">Features</a></li>
+        <li class="hide-sm"><a href="/#claude">Claude</a></li>
+        <li class="hide-sm"><a href="/#install">Install</a></li>
+        <li>
+          <a class="icon-link" href={REPO_URL} aria-label="MarkLite on GitHub">
+            <Icon name="github" size={20} />
+          </a>
+        </li>
+        <li>
+          <a class="btn btn-primary btn-small" href={DOWNLOAD_URL}>Download</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgb(255 255 255 / 0.82);
+    border-bottom: 1px solid rgb(230 232 240 / 0.8);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    backdrop-filter: saturate(180%) blur(14px);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    height: 64px;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ink);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+
+  .brand:hover {
+    color: var(--ink);
+  }
+
+  ul {
+    display: flex;
+    align-items: center;
+    gap: clamp(4px, 1.5vw, 12px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  nav a:not(.btn) {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 8px;
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  nav a:not(.btn):hover {
+    color: var(--ink);
+    background: var(--bg-soft);
+  }
+
+  .icon-link {
+    color: var(--ink);
+  }
+
+  @media (max-width: 640px) {
+    .hide-sm {
+      display: none;
+    }
+  }
+</style>

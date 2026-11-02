@@ -1,0 +1,741 @@
+---
+import { Image, Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+import shotLight from '../assets/screenshot-light.png';
+import shotDark from '../assets/screenshot-dark.png';
+import icon from '../assets/icon.png';
+import { DOWNLOAD_URL, REPO_URL, VERSION } from '../site';
+
+const features = [
+  {
+    icon: 'eye',
+    title: 'Live preview',
+    text: 'A native preview (Direct2D and DirectWrite) sits beside the editor or on its own. You can select and copy text in it.',
+  },
+  {
+    icon: 'bold',
+    title: 'A toolbar for every format',
+    text: 'Headings, lists, tables, callouts, code and more from the toolbar, the Format menu, the right-click menu or the keyboard. Click a button again to remove the formatting.',
+  },
+  {
+    icon: 'spell',
+    title: 'Spell checking in several languages',
+    text: 'Uses the spell checkers built into Windows. Tick English and Swedish and a word is correct if either language knows it.',
+  },
+  {
+    icon: 'image',
+    title: 'Paste screenshots',
+    text: 'Take a screenshot with Win+Shift+S and press Ctrl+V. MarkLite saves it as a PNG in an images folder next to the document and links it.',
+  },
+  {
+    icon: 'tabs',
+    title: 'Tabs and sessions',
+    text: 'Keep several files open in tabs. The ones you had open come back the next time you start MarkLite.',
+  },
+  {
+    icon: 'search',
+    title: 'Find and replace',
+    text: 'Find, replace and go to line. Works with UTF-8, UTF-8 with BOM and UTF-16 files, and with CRLF or LF line endings.',
+  },
+] as const;
+
+const shortcuts = [
+  { keys: ['Ctrl', 'B'], label: 'Bold' },
+  { keys: ['Ctrl', 'Shift', '1…6'], label: 'Heading 1 to 6' },
+  { keys: ['Ctrl', 'K'], label: 'Rewrite with Claude' },
+  { keys: ['Ctrl', '1 / 2 / 3'], label: 'Editor, split, preview' },
+  { keys: ['Alt', 'V'], label: 'Paste a picture' },
+  { keys: ['F7'], label: 'Spell checking on or off' },
+];
+
+const title = 'MarkLite: a fast, native Markdown editor for Windows';
+const description =
+  'MarkLite is a small Markdown reader and editor for Windows 10 and 11, with a live native preview, a formatting toolbar, spell checking in several languages and Rewrite with Claude.';
+---
+
+<Base title={title} description={description}>
+  <Header />
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="wrap hero-inner">
+        <p class="pill">
+          <span class="dot" aria-hidden="true"></span>
+          Free and open source for Windows 10 and 11
+        </p>
+        <h1 id="hero-title">
+          A small, fast <span class="grad">Markdown</span> editor for Windows
+        </h1>
+        <p class="sub">
+          MarkLite is a Markdown reader and editor in a single 1.7&nbsp;MB program. Write on one side and read the
+          formatted page on the other, with no web browser running underneath.
+        </p>
+        <div class="actions">
+          <a class="btn btn-primary" href={DOWNLOAD_URL}>
+            <Icon name="windows" size={18} />
+            Download for Windows
+          </a>
+          <a class="btn btn-secondary" href={REPO_URL}>
+            <Icon name="github" size={18} />
+            View on GitHub
+          </a>
+        </div>
+        <p class="meta">
+          <span>Version {VERSION}</span>
+          <span aria-hidden="true">·</span>
+          <span>Windows 10 and 11, 64-bit</span>
+          <span aria-hidden="true">·</span>
+          <span>MIT licensed</span>
+        </p>
+      </div>
+
+      <div class="wrap">
+        <figure class="shot">
+          <Picture
+            src={shotLight}
+            formats={['avif', 'webp']}
+            widths={[640, 960, 1280, 1680, 2220]}
+            sizes="(min-width: 1224px) 1160px, calc(100vw - 2 * clamp(20px, 4vw, 32px))"
+            alt="MarkLite with a garden journal open: Markdown source on the left and the formatted preview on the right, with a task list, a tip callout and a table."
+            loading="eager"
+            fetchpriority="high"
+          />
+        </figure>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="section" aria-labelledby="features-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Features</p>
+          <h2 id="features-title">Everything in one small window</h2>
+          <p>
+            MarkLite opens Markdown files quickly and stays out of the way while you write. These are the parts you
+            will use every day.
+          </p>
+        </div>
+
+        <ul class="features">
+          {
+            features.map((f) => (
+              <li class="card">
+                <span class="card-icon">
+                  <Icon name={f.icon} size={22} />
+                </span>
+                <h3>{f.title}</h3>
+                <p>{f.text}</p>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="keys">
+          <h3 class="keys-title">Shortcuts you will use</h3>
+          <ul>
+            {
+              shortcuts.map((s) => (
+                <li>
+                  <span class="combo">
+                    {s.keys.map((k) => (
+                      <kbd>{k}</kbd>
+                    ))}
+                  </span>
+                  <span>{s.label}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Themes -->
+    <section class="section section-soft" aria-labelledby="themes-title">
+      <div class="wrap split">
+        <div>
+          <p class="eyebrow">Light and dark</p>
+          <h2 id="themes-title">Matches your Windows theme</h2>
+          <p class="lead">
+            MarkLite follows the light or dark setting in Windows, including the title bar, menus and scroll bars. You
+            can also pick a theme yourself in the View menu.
+          </p>
+          <ul class="ticks">
+            <li>
+              <Icon name="package" size={20} />
+              <span><strong>One program, 1.7 MB.</strong> No runtime to install and no browser engine inside.</span>
+            </li>
+            <li>
+              <Icon name="file" size={20} />
+              <span>
+                <strong>Settings in one file.</strong> Put an empty <code>MarkLite.ini</code> next to the program and it
+                runs as a portable copy.
+              </span>
+            </li>
+            <li>
+              <Icon name="contrast" size={20} />
+              <span><strong>Readable either way.</strong> Syntax colours in the editor and the preview follow the theme.</span>
+            </li>
+          </ul>
+        </div>
+        <figure class="shot shot-side">
+          <Picture
+            src={shotDark}
+            formats={['avif', 'webp']}
+            widths={[640, 960, 1280, 1680]}
+            sizes="(min-width: 900px) 620px, calc(100vw - 2 * clamp(20px, 4vw, 32px))"
+            alt="The same garden journal in MarkLite's dark theme."
+          />
+        </figure>
+      </div>
+    </section>
+
+    <!-- Claude -->
+    <section id="claude" class="section" aria-labelledby="claude-title">
+      <div class="wrap split">
+        <div>
+          <p class="eyebrow">Rewrite with Claude</p>
+          <h2 id="claude-title">Ask Claude to rework a passage, then decide</h2>
+          <p class="lead">
+            Select some text and press <kbd>Ctrl</kbd> <kbd>K</kbd>. Type an instruction if you like, such as
+            "shorter", "more formal" or "translate to Swedish". The suggestion appears next to the original and nothing
+            changes until you accept it.
+          </p>
+          <ul class="ticks">
+            <li>
+              <Icon name="sparkles" size={20} />
+              <span>
+                <strong>Your choice of model.</strong> Claude Opus 5.5, Sonnet 5.5, Haiku 5.5, Fable 5.1 or any other model
+                your API key can use.
+              </span>
+            </li>
+            <li>
+              <Icon name="lock" size={20} />
+              <span>
+                <strong>Your key stays yours.</strong> It is encrypted with Windows DPAPI, so only your Windows account can
+                read it.
+              </span>
+            </li>
+            <li>
+              <Icon name="globe" size={20} />
+              <span>
+                <strong>Only what you send.</strong> The selected text, plus the document if you turn on context, goes
+                to <code>api.anthropic.com</code> and nowhere else.
+              </span>
+            </li>
+          </ul>
+          <p class="fine">Rewrite with Claude needs your own Anthropic API key. Everything else works without one.</p>
+        </div>
+
+        <div class="rewrite" role="img" aria-label="Illustration of the rewrite panel: an original sentence next to a shorter suggestion from Claude, with Accept, Retry and Discard buttons.">
+          <div class="rw-head">
+            <span class="rw-title"><Icon name="sparkles" size={16} /> Rewrite</span>
+            <span class="rw-model">Claude Sonnet 5.5</span>
+          </div>
+          <div class="rw-instr">make it shorter</div>
+          <div class="rw-cols">
+            <div class="rw-col">
+              <span class="rw-label">Original</span>
+              <p>
+                We are planning to start planting the vegetable garden at some point during the first couple of weeks of
+                May, depending on how the weather turns out.
+              </p>
+            </div>
+            <div class="rw-col rw-new">
+              <span class="rw-label">Suggestion</span>
+              <p>We'll plant the vegetable garden in early May, weather permitting.</p>
+            </div>
+          </div>
+          <div class="rw-actions">
+            <span class="rw-btn rw-accept">Accept <span class="rw-kbd">Ctrl+Enter</span></span>
+            <span class="rw-btn">Retry</span>
+            <span class="rw-btn">Discard</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Install -->
+    <section id="install" class="section section-soft" aria-labelledby="install-title">
+      <div class="wrap split install">
+        <div>
+          <p class="eyebrow">Install</p>
+          <h2 id="install-title">A small installer that tidies up after itself</h2>
+          <ul class="ticks">
+            <li>
+              <Icon name="user" size={20} />
+              <span><strong>Just for you, no admin rights.</strong> MarkLite installs into your user profile by default.</span>
+            </li>
+            <li>
+              <Icon name="users" size={20} />
+              <span><strong>Or for everyone on the PC.</strong> Choose all users and it goes to Program Files.</span>
+            </li>
+            <li>
+              <Icon name="grid" size={20} />
+              <span><strong>Start menu shortcut</strong>, plus a desktop shortcut if you want one.</span>
+            </li>
+            <li>
+              <Icon name="file" size={20} />
+              <span><strong>Opens .md files.</strong> MarkLite can register for .md and .markdown files so it shows up in Open with.</span>
+            </li>
+            <li>
+              <Icon name="trash" size={20} />
+              <span>
+                <strong>Clean uninstall</strong> from Settings, Apps. Your settings stay unless you tick the box to remove
+                them.
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="get">
+          <Image class="get-icon" src={icon} alt="" width={72} height={72} densities={[1, 2, 3]} />
+          <h3>MarkLite {VERSION}</h3>
+          <p class="get-req">For Windows 10 and 11, 64-bit</p>
+          <a class="btn btn-primary get-btn" href={DOWNLOAD_URL}>
+            <Icon name="download" size={18} />
+            Download the installer
+          </a>
+          <p class="note">
+            <Icon name="info" size={16} />
+            <span>
+              The installer isn't code-signed yet, so Windows SmartScreen may stop it the first
+              time. Choose <strong>More info</strong>, then <strong>Run anyway</strong>.
+            </span>
+          </p>
+          <p class="get-src">
+            Prefer to build it yourself? <a href={REPO_URL}>The source and build steps are on GitHub</a>.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Base>
+
+<style>
+  /* ---------------------------------------------------------------- hero */
+  .hero {
+    position: relative;
+    padding-top: clamp(56px, 9vw, 104px);
+    overflow: hidden;
+  }
+
+  .glow {
+    position: absolute;
+    inset: -240px 0 auto;
+    height: 760px;
+    background:
+      radial-gradient(40% 50% at 30% 40%, rgb(66 105 238 / 0.16), transparent 70%),
+      radial-gradient(40% 50% at 70% 35%, rgb(114 68 225 / 0.14), transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.7);
+    color: var(--ink-2);
+    font-size: 0.875rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-a), var(--brand-b));
+  }
+
+  h1 {
+    max-width: 880px;
+    margin-top: 24px;
+    font-size: clamp(2.5rem, 6.4vw, 4.5rem);
+    font-weight: 750;
+    letter-spacing: -0.04em;
+    line-height: 1.04;
+  }
+
+  .grad {
+    background: linear-gradient(120deg, var(--brand-a) 10%, var(--brand-b) 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .sub {
+    max-width: 640px;
+    margin-top: 24px;
+    color: var(--ink-2);
+    font-size: clamp(1.0625rem, 2vw, 1.25rem);
+    line-height: 1.55;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 36px;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 10px;
+    margin-top: 20px;
+    color: var(--ink-3);
+    font-size: 0.875rem;
+  }
+
+  @media (max-width: 480px) {
+    .actions {
+      flex-direction: column;
+      align-self: stretch;
+    }
+  }
+
+  /* ---------------------------------------------------------------- screenshots */
+  .shot {
+    position: relative;
+    margin: clamp(48px, 7vw, 80px) 0 0;
+  }
+
+  .shot :global(img) {
+    width: 100%;
+    border: 1px solid rgb(15 20 50 / 0.1);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    background: #fff;
+  }
+
+  .shot-side {
+    margin: 0;
+  }
+
+  /* ---------------------------------------------------------------- features */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (max-width: 960px) {
+    .features {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 620px) {
+    .features {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .card {
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--brand-tint);
+    color: var(--brand);
+  }
+
+  .card h3 {
+    margin-top: 20px;
+    font-size: 1.0625rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+
+  .card p {
+    margin-top: 8px;
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+
+  .keys {
+    margin-top: 48px;
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-soft);
+  }
+
+  .keys-title {
+    font-size: 1rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+
+  .keys ul {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px 24px;
+    margin: 18px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (max-width: 960px) {
+    .keys ul {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .keys ul {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .keys li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+
+  .combo {
+    display: inline-flex;
+    gap: 4px;
+  }
+
+  code {
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: rgb(76 88 232 / 0.08);
+    color: var(--ink);
+    font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+    font-size: 0.875em;
+  }
+
+  .fine {
+    margin-top: 24px;
+    color: var(--ink-3);
+    font-size: 0.875rem;
+  }
+
+  /* ---------------------------------------------------------------- rewrite illustration */
+  .rewrite {
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: var(--shadow-lg);
+    font-size: 0.9375rem;
+  }
+
+  .rw-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .rw-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink);
+    font-weight: 650;
+  }
+
+  .rw-title :global(svg) {
+    color: var(--brand-b);
+  }
+
+  .rw-model {
+    padding: 4px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink-2);
+    font-size: 0.8125rem;
+  }
+
+  .rw-instr {
+    margin-top: 14px;
+    padding: 10px 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    color: var(--ink);
+  }
+
+  .rw-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  @media (max-width: 520px) {
+    .rw-cols {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .rw-col {
+    padding: 14px;
+    border-radius: 10px;
+    background: var(--bg-soft);
+    color: var(--ink-2);
+  }
+
+  .rw-new {
+    background: linear-gradient(135deg, rgb(66 105 238 / 0.08), rgb(114 68 225 / 0.08));
+    color: var(--ink);
+  }
+
+  .rw-label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--ink-3);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .rw-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .rw-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border: 1px solid var(--line-strong);
+    border-radius: 9px;
+    color: var(--ink);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .rw-accept {
+    border-color: transparent;
+    background: var(--brand);
+    color: #fff;
+  }
+
+  .rw-kbd {
+    opacity: 0.8;
+    font-size: 0.75rem;
+  }
+
+  /* ---------------------------------------------------------------- install */
+  .install {
+    align-items: start;
+  }
+
+  .install h2 {
+    max-width: 520px;
+  }
+
+  .get {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: clamp(28px, 5vw, 44px);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+  }
+
+  .get-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+  }
+
+  .get h3 {
+    margin-top: 18px;
+    font-size: 1.375rem;
+    font-weight: 700;
+  }
+
+  .get-req {
+    margin-top: 4px;
+    color: var(--ink-3);
+    font-size: 0.9375rem;
+  }
+
+  .get-btn {
+    margin-top: 24px;
+  }
+
+  @media (max-width: 420px) {
+    .get-btn {
+      align-self: stretch;
+    }
+  }
+
+  .note {
+    display: flex;
+    gap: 10px;
+    max-width: 400px;
+    margin-top: 24px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: var(--bg-soft);
+    color: var(--ink-2);
+    font-size: 0.875rem;
+    text-align: left;
+  }
+
+  .note :global(svg) {
+    flex: none;
+    margin-top: 2px;
+    color: var(--ink-3);
+  }
+
+  .note strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .get-src {
+    margin-top: 20px;
+    color: var(--ink-3);
+    font-size: 0.875rem;
+  }
+</style>

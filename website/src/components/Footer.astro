@@ -1,0 +1,168 @@
+---
+import { Image } from 'astro:assets';
+import icon from '../assets/icon.png';
+import Icon from './Icon.astro';
+import { AUTHOR_URL, LINKEDIN_URL, RELEASES_URL, REPO_URL, VERSION } from '../site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="top">
+      <div class="about">
+        <a class="brand" href="/">
+          <Image src={icon} alt="" width={28} height={28} densities={[1, 2, 3]} />
+          <span>MarkLite</span>
+        </a>
+        <p>A fast, native Markdown reader and editor for Windows 10 and 11.</p>
+      </div>
+      <nav class="cols" aria-label="Footer">
+        <div>
+          <h2>Project</h2>
+          <ul>
+            <li><a href={REPO_URL}>Source on GitHub</a></li>
+            <li><a href={RELEASES_URL}>Releases</a></li>
+            <li><a href={`${REPO_URL}/issues`}>Report an issue</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Author</h2>
+          <ul>
+            <li><a href={AUTHOR_URL}>mattias.li</a></li>
+            <li><a href={LINKEDIN_URL}>LinkedIn</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="bottom">
+      <div class="crafted-row">
+        <p class="crafted">Carefully crafted by Mattias Li</p>
+        <div class="social">
+          <a href={AUTHOR_URL} aria-label="Mattias Li's website, mattias.li"><Icon name="globe" size={18} /></a>
+          <a href={LINKEDIN_URL} aria-label="Mattias Li on LinkedIn"><Icon name="linkedin" size={17} /></a>
+          <a href={REPO_URL} aria-label="MarkLite on GitHub"><Icon name="github" size={18} /></a>
+        </div>
+      </div>
+      <p class="legal">
+        Version {VERSION}. Released under the <a href={`${REPO_URL}/blob/main/LICENSE`}>MIT License</a>. &copy; {year} Mattias Li.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--line);
+    background: #fff;
+    padding-block: 56px 40px;
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+
+  .top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 40px;
+  }
+
+  .about {
+    max-width: 340px;
+  }
+
+  .about p {
+    margin-top: 12px;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ink);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .cols {
+    display: flex;
+    gap: clamp(40px, 8vw, 96px);
+  }
+
+  h2 {
+    margin-bottom: 12px;
+    color: var(--ink);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  ul {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .cols a {
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+
+  .cols a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+
+  .bottom {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+
+  .crafted-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .crafted {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .social {
+    display: flex;
+    gap: 6px;
+  }
+
+  .social a {
+    display: inline-grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--ink-2);
+  }
+
+  .social a:hover {
+    color: var(--ink);
+    border-color: var(--line-strong);
+    background: var(--bg-soft);
+  }
+
+  .legal {
+    margin-top: 12px;
+    color: var(--ink-3);
+    font-size: 0.875rem;
+  }
+
+  .legal a {
+    color: inherit;
+  }
+</style>
