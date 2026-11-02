@@ -5,7 +5,8 @@
 #include "Scintilla.h"
 
 #define APP_NAME L"MarkLite"
-#define APP_VERSION L"1.0.0"
+#include "version.h"   // generated from VERSION by the Makefile
+#define APP_VERSION MARKLITE_VERSION_W
 
 // ---------------------------------------------------------------- messages
 enum : UINT {

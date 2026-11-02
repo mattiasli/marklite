@@ -1,5 +1,10 @@
 # MarkLite - lightweight native Markdown editor for Windows
-# Toolchain: MSYS2 UCRT64 GCC (mingw-w64).  Build:  mingw32-make  (or run build.bat)
+# Toolchain: MSYS2 UCRT64 GCC (mingw-w64). Run from the repository root:
+#
+#   mingw32-make              MarkLite.exe
+#   mingw32-make clean        remove all build output
+#
+# build.bat runs the same targets from a normal Command Prompt.
 
 CXX      = g++
 CC       = gcc
@@ -9,15 +14,23 @@ BUILD    = build
 SCI      = third_party/scintilla
 MD4C     = third_party/md4c
 TARGET   = MarkLite.exe
+SETUP    = MarkLite-Setup.exe
+
+# The version lives in one place, the VERSION file. It is compiled into the app, the installer
+# and the version resources through the generated header build/version.h.
+VERSION     := $(strip $(file <VERSION))
+comma       := ,
+VERSION_NUM := $(subst .,$(comma),$(VERSION))$(comma)0
+VERSION_H   := $(BUILD)/version.h
 
 OPT      = -O2 -ffunction-sections -fdata-sections
 DEFS     = -DNDEBUG -DUNICODE -D_UNICODE -DNOMINMAX -D_WIN32_WINNT=0x0A00 -DWINVER=0x0A00
 
-APPFLAGS = -std=c++17 $(OPT) $(DEFS) -Wall -Wno-unknown-pragmas -I$(SCI)/include -I$(MD4C)
+APPFLAGS = -std=c++17 $(OPT) $(DEFS) -Wall -Wno-unknown-pragmas -I$(SCI)/include -I$(MD4C) -I$(BUILD)
 SCIFLAGS = -std=c++17 $(OPT) -DNDEBUG -DNO_CXX11_REGEX -I$(SCI)/include -I$(SCI)/src
 CFLAGS   = $(OPT) -DNDEBUG -DMD4C_USE_UTF8
 
-LDFLAGS  = -static -municode -mwindows -s -Wl,--gc-sections
+LDFLAGS  = -static -municode -mwindows -s -Wl,--gc-sections -Wl,--dynamicbase,--nxcompat,--high-entropy-va
 LIBS     = -ld2d1 -ldwrite -lwindowscodecs -lwinhttp -lcrypt32 -lole32 -loleaut32 -luuid \
            -lcomctl32 -lcomdlg32 -lshell32 -lshlwapi -luxtheme -ldwmapi -limm32 -lmsimg32 \
            -lgdi32 -luser32 -ladvapi32
@@ -45,6 +58,18 @@ all: $(TARGET)
 
 scintilla: $(SCI_LIB)
 
+$(BUILD):
+	@mkdir -p $@
+
+$(VERSION_H): VERSION | $(BUILD)
+	$(if $(VERSION),,$(error VERSION file is missing or empty))
+	$(file >$@,// Generated from VERSION by the Makefile. Do not edit.)
+	$(file >>$@,#pragma once)
+	$(file >>$@,#define MARKLITE_VERSION "$(VERSION)")
+	$(file >>$@,#define MARKLITE_VERSION_W L"$(VERSION)")
+	$(file >>$@,#define MARKLITE_VERSION_NUM $(VERSION_NUM))
+	@echo "version $(VERSION)"
+
 $(TARGET): $(APP_OBJ) $(MD4C_OBJ) $(RES_OBJ) $(SCI_LIB)
 	$(CXX) $(LDFLAGS) -o $@ $(APP_OBJ) $(MD4C_OBJ) $(RES_OBJ) $(SCI_LIB) $(LIBS)
 
@@ -55,7 +80,7 @@ $(BUILD)/sci/%.o: $(SCI)/%.cxx
 	@mkdir -p $(dir $@)
 	$(CXX) $(SCIFLAGS) -c $< -o $@
 
-$(BUILD)/app/%.o: src/%.cpp $(APP_HDR)
+$(BUILD)/app/%.o: src/%.cpp $(APP_HDR) $(VERSION_H)
 	@mkdir -p $(dir $@)
 	$(CXX) $(APPFLAGS) -c $< -o $@
 
@@ -63,9 +88,9 @@ $(MD4C_OBJ): $(MD4C)/md4c.c $(MD4C)/md4c.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(RES_OBJ): res/app.rc res/app.manifest res/app.ico src/resource.h
+$(RES_OBJ): res/app.rc res/app.manifest res/app.ico src/resource.h $(VERSION_H)
 	@mkdir -p $(dir $@)
-	$(WINDRES) -I src -O coff res/app.rc -o $@
+	$(WINDRES) -I src -I $(BUILD) -O coff res/app.rc -o $@
 
 clean:
 	rm -rf $(BUILD) $(TARGET)

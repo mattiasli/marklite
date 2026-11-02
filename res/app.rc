@@ -1,12 +1,13 @@
 #include <windows.h>
 #include "resource.h"
+#include "version.h"
 
 1 RT_MANIFEST "res/app.manifest"
 IDI_APP ICON "res/app.ico"
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,0
- PRODUCTVERSION 1,0,0,0
+ FILEVERSION MARKLITE_VERSION_NUM
+ PRODUCTVERSION MARKLITE_VERSION_NUM
  FILEOS VOS_NT_WINDOWS32
  FILETYPE VFT_APP
 BEGIN
@@ -14,11 +15,13 @@ BEGIN
   BEGIN
     BLOCK "040904B0"
     BEGIN
+      VALUE "CompanyName", "Mattias Li"
       VALUE "FileDescription", "MarkLite Markdown Editor"
-      VALUE "FileVersion", "1.0.0"
-      VALUE "ProductName", "MarkLite"
-      VALUE "ProductVersion", "1.0.0"
+      VALUE "FileVersion", MARKLITE_VERSION
+      VALUE "LegalCopyright", "Copyright (c) 2026 Mattias Li"
       VALUE "OriginalFilename", "MarkLite.exe"
+      VALUE "ProductName", "MarkLite"
+      VALUE "ProductVersion", MARKLITE_VERSION
     END
   END
   BLOCK "VarFileInfo"
