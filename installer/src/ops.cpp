@@ -482,7 +482,7 @@ bool LaunchApp(const std::wstring& exe) {
 std::wstring ErrorMessage(DWORD code, const std::wstring& dir) {
     switch (code) {
     case SETUP_ERR_RUNNING: return L"MarkLite is open. Close it and try again.";
-    case SETUP_ERR_PAYLOAD: return L"This installer is damaged. Download it again from marklite.vercel.app.";
+    case SETUP_ERR_PAYLOAD: return L"This installer is damaged. Download it again from marklite-app.vercel.app.";
     case SETUP_ERR_NOT_INSTALLED: return L"MarkLite isn't installed in " + dir + L".";
     case ERROR_CANCELLED: return L"Windows didn't get administrator permission.";
     case ERROR_ACCESS_DENIED: return L"Windows didn't allow changes in " + dir + L".";

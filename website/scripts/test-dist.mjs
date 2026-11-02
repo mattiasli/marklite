@@ -76,8 +76,8 @@ for (const file of htmlFiles) {
   }
 }
 
-if (!/<link rel="canonical" href="https:\/\/marklite\.vercel\.app\/?"/.test(index)) fail('index.html: canonical URL missing');
-if (!/<meta property="og:image" content="https:\/\/marklite\.vercel\.app\/og\.png"/.test(index)) fail('index.html: og:image missing');
+if (!/<link rel="canonical" href="https:\/\/marklite-app\.vercel\.app\/?"/.test(index)) fail('index.html: canonical URL missing');
+if (!/<meta property="og:image" content="https:\/\/marklite-app\.vercel\.app\/og\.png"/.test(index)) fail('index.html: og:image missing');
 
 // ---------------------------------------------------------------- every page: internal links and assets
 for (const file of htmlFiles) {

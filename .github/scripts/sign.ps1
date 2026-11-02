@@ -14,7 +14,7 @@ $pfx = Join-Path $env:RUNNER_TEMP "signing.pfx"
 try {
     [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:SIGNING_CERT_PFX_BASE64))
     & $signtool.FullName sign /f $pfx /p $env:SIGNING_CERT_PASSWORD /fd SHA256 `
-        /tr http://timestamp.digicert.com /td SHA256 /d "MarkLite" /du "https://marklite.vercel.app" $File
+        /tr http://timestamp.digicert.com /td SHA256 /d "MarkLite" /du "https://marklite-app.vercel.app" $File
     if ($LASTEXITCODE) { throw "signtool failed with exit code $LASTEXITCODE" }
     & $signtool.FullName verify /pa $File
     if ($LASTEXITCODE) { throw "the signature on $File did not verify" }

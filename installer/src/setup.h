@@ -21,7 +21,7 @@ inline constexpr wchar_t kShortcutName[] = L"MarkLite.lnk";
 inline constexpr wchar_t kUninstallKey[] = L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\MarkLite";
 inline constexpr wchar_t kProgId[] = L"MarkLite.Markdown";
 inline constexpr wchar_t kCapabilitiesKey[] = L"Software\\MarkLite\\Capabilities";
-inline constexpr wchar_t kWebsite[] = L"https://marklite.vercel.app";
+inline constexpr wchar_t kWebsite[] = L"https://marklite-app.vercel.app";
 inline constexpr wchar_t kRepo[] = L"https://github.com/mattiasli/marklite";
 inline constexpr wchar_t kAppWindowClass[] = L"MarkLiteMain";   // MarkLite's main window (src/main.cpp)
 }

@@ -5,7 +5,7 @@
 A small, fast, native Markdown reader and editor for Windows 10 and 11. The whole app is a single
 1.7 MB `MarkLite.exe` with no runtime and no web browser inside.
 
-Website and download: [marklite.vercel.app](https://marklite.vercel.app)
+Website and download: [marklite-app.vercel.app](https://marklite-app.vercel.app)
 
 - **Editor:** syntax-coloured Markdown editing, with tabs for several files.
 - **Preview:** a live, native preview (Direct2D/DirectWrite) beside the editor or on its own. You can select and copy text in it.
@@ -229,7 +229,7 @@ The rest of the repository:
 |---|---|
 | `installer/` | The installer, also written in C++ with Win32 and Direct2D. The same program is copied into the install folder as `uninstall.exe`. `installer/tools/pack.cpp` compresses `MarkLite.exe` (LZMS) before it is embedded. |
 | `tests/` | Unit tests for the formatting commands, the editor's syntax colouring, the JSON code and image handling on Save As. They drive a real, hidden Scintilla control. `installer-smoke.ps1` installs and uninstalls the app and checks the files, shortcuts and registry entries. |
-| `website/` | The website at [marklite.vercel.app](https://marklite.vercel.app), built with [Astro](https://astro.build). See `website/README.md`. |
+| `website/` | The website at [marklite-app.vercel.app](https://marklite-app.vercel.app), built with [Astro](https://astro.build). See `website/README.md`. |
 | `.github/workflows/` | `ci.yml` builds everything and runs all tests on every push and pull request. `release.yml` publishes a release when a version tag is pushed. |
 
 ## Releasing a new version

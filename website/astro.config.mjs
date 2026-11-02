@@ -15,7 +15,7 @@ function appVersion() {
 }
 
 export default defineConfig({
-  site: 'https://marklite.vercel.app',
+  site: 'https://marklite-app.vercel.app',
   trailingSlash: 'ignore',
   build: {
     format: 'file',

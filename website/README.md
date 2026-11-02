@@ -1,7 +1,7 @@
 # MarkLite website
 
 The landing page for MarkLite, built with [Astro](https://astro.build) as a static site. It is
-deployed on Vercel at https://marklite.vercel.app.
+deployed on Vercel at https://marklite-app.vercel.app.
 
 ## Working on it
 

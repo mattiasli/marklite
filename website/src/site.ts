@@ -5,4 +5,4 @@ export const DOWNLOAD_URL = `${REPO_URL}/releases/latest/download/MarkLite-Setup
 export const RELEASES_URL = `${REPO_URL}/releases`;
 export const AUTHOR_URL = 'https://www.mattias.li';
 export const LINKEDIN_URL = 'https://www.linkedin.com/in/mattiasli/';
-export const SITE_URL = 'https://marklite.vercel.app';
+export const SITE_URL = 'https://marklite-app.vercel.app';
