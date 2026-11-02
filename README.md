@@ -1,7 +1,11 @@
 # MarkLite
 
-A small, fast, native Markdown reader and editor for Windows 10 and 11. It is a single
-1.7 MB `MarkLite.exe` with no installer, no runtime and no web browser inside.
+[![CI](https://github.com/mattiasli/marklite/actions/workflows/ci.yml/badge.svg)](https://github.com/mattiasli/marklite/actions/workflows/ci.yml)
+
+A small, fast, native Markdown reader and editor for Windows 10 and 11. The whole app is a single
+1.7 MB `MarkLite.exe` with no runtime and no web browser inside.
+
+Website and download: [marklite.vercel.app](https://marklite.vercel.app)
 
 - **Editor:** syntax-coloured Markdown editing, with tabs for several files.
 - **Preview:** a live, native preview (Direct2D/DirectWrite) beside the editor or on its own. You can select and copy text in it.
@@ -10,10 +14,38 @@ A small, fast, native Markdown reader and editor for Windows 10 and 11. It is a 
 - **Rewrite with Claude:** select text, optionally type an instruction, and review the suggestion before accepting it.
 - **Other:** light and dark themes (or follow Windows), find and replace, UTF-8, UTF-8 with BOM and UTF-16 files, CRLF and LF line endings, and session restore.
 
-## Running it
+## Installing
 
-Copy `MarkLite.exe` anywhere and run it. You can open `.md` files with it from Explorer or drop them
-onto the window.
+Download `MarkLite-Setup.exe` from the [latest release](https://github.com/mattiasli/marklite/releases/latest)
+and run it. Setup asks whether to install for you alone or for everyone on the PC:
+
+- **Just me** (the default) installs to `%LOCALAPPDATA%\Programs\MarkLite`. No administrator rights are needed.
+- **All users** installs to `Program Files\MarkLite` and asks for administrator rights.
+
+Setup adds MarkLite to the Start menu and, if you leave the boxes ticked, to the desktop and to the
+"Open with" list for `.md` and `.markdown` files. MarkLite only becomes the default app for Markdown
+files if no other app has claimed them; otherwise Windows lets you pick it in **Settings → Default apps**.
+
+Uninstall it from **Settings → Apps** like any other app. Your settings are kept unless you tick
+"Also remove my settings".
+
+The release builds are not code-signed yet, so Windows SmartScreen may warn the first time you run
+Setup. Choose **More info → Run anyway**.
+
+Setup can also run without a window, for scripted installs:
+
+```
+MarkLite-Setup.exe --silent [--just-me | --all-users] [--dir=PATH]
+                   [--no-desktop-shortcut] [--no-file-associations]
+uninstall.exe --silent [--remove-settings]
+```
+
+Exit code 0 means success.
+
+### Without installing
+
+`MarkLite.exe` is also attached to each release. Copy it anywhere and run it. You can open `.md`
+files with it from Explorer or drop them onto the window.
 
 Settings are saved in `%APPDATA%\MarkLite\MarkLite.ini`. For a portable setup, put a `MarkLite.ini` file
 (it can be empty) next to `MarkLite.exe`, and that file is used instead.
@@ -159,8 +191,17 @@ Requirements: [MSYS2](https://www.msys2.org) with the UCRT64 toolchain.
 pacman -S mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-make
 ```
 
-Then run `build.bat`, or `mingw32-make` from an MSYS2 UCRT64 shell. This produces a statically linked
-`MarkLite.exe` in the project folder. `mingw32-make clean` removes the build output.
+Then run `build.bat`, or `mingw32-make` from an MSYS2 UCRT64 shell. Both take the same targets:
+
+| Command | Builds |
+|---|---|
+| `mingw32-make` | `MarkLite.exe`, statically linked, in the project folder |
+| `mingw32-make installer` | `MarkLite-Setup.exe`, the installer with `MarkLite.exe` inside |
+| `mingw32-make test` | the unit tests, and runs them |
+| `mingw32-make clean` | removes all build output |
+
+The version number lives in the `VERSION` file. The build compiles it into the app, the installer and
+their version resources.
 
 How the build is configured:
 
@@ -182,7 +223,32 @@ The source is in `src/`:
 | `settings.cpp`, `dialogs.cpp` | Settings file and dialogs |
 | `tabs.cpp`, `findbar.cpp`, `theme.cpp` | Tab strip, find bar and colours |
 
+The rest of the repository:
+
+| Folder | Contents |
+|---|---|
+| `installer/` | The installer, also written in C++ with Win32 and Direct2D. The same program is copied into the install folder as `uninstall.exe`. `installer/tools/pack.cpp` compresses `MarkLite.exe` (LZMS) before it is embedded. |
+| `tests/` | Unit tests for the formatting commands, the editor's syntax colouring, the JSON code and image handling on Save As. They drive a real, hidden Scintilla control. `installer-smoke.ps1` installs and uninstalls the app and checks the files, shortcuts and registry entries. |
+| `website/` | The website at [marklite.vercel.app](https://marklite.vercel.app), built with [Astro](https://astro.build). See `website/README.md`. |
+| `.github/workflows/` | `ci.yml` builds everything and runs all tests on every push and pull request. `release.yml` publishes a release when a version tag is pushed. |
+
+## Releasing a new version
+
+1. Update `VERSION` and commit.
+2. Tag the commit and push the tag: `git tag v1.2.0 && git push origin v1.2.0`.
+3. The release workflow builds and tests the app and installer, then publishes a GitHub release
+   with `MarkLite-Setup.exe`, `MarkLite.exe` and `SHA256SUMS.txt`. The website's download button
+   always points at the newest release.
+
+Code signing is prepared in `release.yml` but switched off. To use it, add the repository variable
+`SIGN_RELEASES=true` and the secrets `SIGNING_CERT_PFX_BASE64` (the .pfx file, base64-encoded) and
+`SIGNING_CERT_PASSWORD`.
+
 ## Third-party code
 
 - [Scintilla](https://www.scintilla.org) 5.6.9: the editing component. Licence: `third_party/scintilla/License.txt`.
 - [md4c](https://github.com/mity/md4c): the Markdown parser. Licence: `third_party/md4c/LICENSE.md`.
+
+## Licence
+
+MarkLite is released under the MIT licence. See `LICENSE`.
