@@ -1,0 +1,33 @@
+#include <windows.h>
+#include "resource.h"
+#include "version.h"
+
+1 RT_MANIFEST "installer/res/setup.manifest"
+IDI_APP ICON "res/app.ico"
+IDR_PAYLOAD RCDATA "build/payload.bin"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION MARKLITE_VERSION_NUM
+ PRODUCTVERSION MARKLITE_VERSION_NUM
+ FILEOS VOS_NT_WINDOWS32
+ FILETYPE VFT_APP
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904B0"
+    BEGIN
+      VALUE "CompanyName", "Mattias Li"
+      VALUE "FileDescription", "MarkLite Setup"
+      VALUE "FileVersion", MARKLITE_VERSION
+      VALUE "InternalName", "MarkLite-Setup"
+      VALUE "LegalCopyright", "Copyright (c) 2026 Mattias Li"
+      VALUE "OriginalFilename", "MarkLite-Setup.exe"
+      VALUE "ProductName", "MarkLite"
+      VALUE "ProductVersion", MARKLITE_VERSION
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x409, 1200
+  END
+END

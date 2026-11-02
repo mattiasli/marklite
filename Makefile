@@ -2,6 +2,7 @@
 # Toolchain: MSYS2 UCRT64 GCC (mingw-w64). Run from the repository root:
 #
 #   mingw32-make              MarkLite.exe
+#   mingw32-make installer    MarkLite-Setup.exe (the installer, with MarkLite.exe inside)
 #   mingw32-make test         build and run the unit tests
 #   mingw32-make clean        remove all build output
 #
@@ -53,6 +54,19 @@ SIZE_OPT = aipanel ai clipimage dialogs findbar format json settings tabs theme 
 $(patsubst %,$(BUILD)/app/%.o,$(SIZE_OPT)): OPT = -Os -ffunction-sections -fdata-sections
 RES_OBJ  = $(BUILD)/app.res.o
 
+# ---------------------------------------------------------------- installer
+# The installer embeds MarkLite.exe, compressed with LZMS by build/pack.exe.
+SETUP_SRC   = $(wildcard installer/src/*.cpp)
+SETUP_OBJ   = $(patsubst installer/src/%.cpp,$(BUILD)/setup/%.o,$(SETUP_SRC))
+SETUP_HDR   = $(wildcard installer/src/*.h)
+SETUP_RES   = $(BUILD)/setup.res.o
+SETUPFLAGS  = -std=c++17 -Os -ffunction-sections -fdata-sections $(DEFS) -Wall -Wextra -Wno-unknown-pragmas \
+              -Wno-cast-function-type -Wno-missing-field-initializers -I$(BUILD) -Iinstaller/src
+# d2d1, dwrite, dwmapi and cabinet are loaded at run time from System32 (see installer/src/main.cpp).
+SETUP_LIBS  = -lcomctl32 -lole32 -loleaut32 -luuid -lshell32 -ladvapi32 -luser32 -lgdi32
+PACK        = $(BUILD)/pack.exe
+PAYLOAD     = $(BUILD)/payload.bin
+
 # ---------------------------------------------------------------- unit tests
 # The tests link the app's formatting, editor styling, theme, settings and JSON code and drive a real
 # (hidden) Scintilla control. tests/stubs.cpp stands in for the few main window services they use.
@@ -61,9 +75,11 @@ TEST_OBJ     = $(patsubst tests/%.cpp,$(BUILD)/tests/%.o,$(TEST_SRC))
 TEST_APP_OBJ = $(patsubst %,$(BUILD)/app/%.o,format editor theme settings json)
 TESTS        = $(BUILD)/tests.exe
 
-.PHONY: all clean scintilla tests test
+.PHONY: all clean scintilla installer tests test
 
 all: $(TARGET)
+
+installer: $(SETUP)
 
 tests: $(TESTS)
 
@@ -106,6 +122,23 @@ $(RES_OBJ): res/app.rc res/app.manifest res/app.ico src/resource.h $(VERSION_H)
 	@mkdir -p $(dir $@)
 	$(WINDRES) -I src -I $(BUILD) -O coff res/app.rc -o $@
 
+# ---------------------------------------------------------------- installer rules
+$(PACK): installer/tools/pack.cpp installer/src/payload.h | $(BUILD)
+	$(CXX) -std=c++17 -O2 $(DEFS) -Wall -static -municode -o $@ $< -lcabinet
+
+$(PAYLOAD): $(TARGET) $(PACK)
+	./$(PACK) $(TARGET) $@
+
+$(BUILD)/setup/%.o: installer/src/%.cpp $(SETUP_HDR) $(VERSION_H)
+	@mkdir -p $(dir $@)
+	$(CXX) $(SETUPFLAGS) -c $< -o $@
+
+$(SETUP_RES): installer/res/setup.rc installer/res/setup.manifest installer/src/resource.h res/app.ico $(PAYLOAD) $(VERSION_H)
+	$(WINDRES) -I installer/src -I $(BUILD) -O coff installer/res/setup.rc -o $@
+
+$(SETUP): $(SETUP_OBJ) $(SETUP_RES)
+	$(CXX) $(LDFLAGS) -o $@ $(SETUP_OBJ) $(SETUP_RES) $(SETUP_LIBS)
+
 # ---------------------------------------------------------------- test rules
 $(BUILD)/tests/%.o: tests/%.cpp $(wildcard tests/*.h) $(APP_HDR) $(VERSION_H)
 	@mkdir -p $(dir $@)
@@ -115,4 +148,4 @@ $(TESTS): $(TEST_OBJ) $(TEST_APP_OBJ) $(SCI_LIB)
 	$(CXX) -static -municode -mconsole -o $@ $(TEST_OBJ) $(TEST_APP_OBJ) $(SCI_LIB) $(LIBS)
 
 clean:
-	rm -rf $(BUILD) $(TARGET)
+	rm -rf $(BUILD) $(TARGET) $(SETUP)
