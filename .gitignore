@@ -1,0 +1,19 @@
+# Build output
+/build/
+*.exe
+*.o
+*.a
+*.res
+
+# Website
+node_modules/
+website/dist/
+website/.astro/
+.vercel/
+
+# Editors and OS
+.vs/
+.vscode/
+*.swp
+Thumbs.db
+.DS_Store

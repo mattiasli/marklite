@@ -1,0 +1,61 @@
+#include <windows.h>
+#include "resource.h"
+
+1 RT_MANIFEST "res/app.manifest"
+IDI_APP ICON "res/app.ico"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,0
+ PRODUCTVERSION 1,0,0,0
+ FILEOS VOS_NT_WINDOWS32
+ FILETYPE VFT_APP
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904B0"
+    BEGIN
+      VALUE "FileDescription", "MarkLite Markdown Editor"
+      VALUE "FileVersion", "1.0.0"
+      VALUE "ProductName", "MarkLite"
+      VALUE "ProductVersion", "1.0.0"
+      VALUE "OriginalFilename", "MarkLite.exe"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x409, 1200
+  END
+END
+
+IDD_SETTINGS DIALOGEX 0, 0, 330, 214
+STYLE DS_SHELLFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Claude settings"
+FONT 9, "Segoe UI", 400, 0, 0x1
+BEGIN
+    LTEXT           "Anthropic API key", -1, 10, 10, 310, 10
+    EDITTEXT        IDC_APIKEY, 10, 22, 258, 14, ES_PASSWORD | ES_AUTOHSCROLL
+    PUSHBUTTON      "Show", IDC_SHOWKEY, 272, 21, 48, 16
+    LTEXT           "Stored encrypted for your Windows account (DPAPI). Create a key at console.anthropic.com.", IDC_KEYHINT, 10, 40, 310, 18
+    LTEXT           "Default model (the AI panel also lets you switch per request)", -1, 10, 62, 310, 10
+    COMBOBOX        IDC_MODEL, 10, 74, 206, 140, CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Refresh list", IDC_REFRESH, 220, 73, 48, 16
+    PUSHBUTTON      "Verify key", IDC_VERIFY, 272, 73, 48, 16
+    LTEXT           "Effort (higher = more careful, slower and more tokens)", -1, 10, 96, 310, 10
+    COMBOBOX        IDC_EFFORT, 10, 108, 100, 100, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    AUTOCHECKBOX    "", IDC_CONTEXT, 10, 130, 10, 10, WS_TABSTOP
+    LTEXT           "Send the whole document as context by default (better results, more tokens)", IDC_CONTEXT_LBL, 22, 130, 298, 10, SS_NOTIFY
+    LTEXT           "", IDC_STATUS, 10, 150, 310, 30
+    DEFPUSHBUTTON   "OK", IDOK, 216, 190, 50, 16
+    PUSHBUTTON      "Cancel", IDCANCEL, 270, 190, 50, 16
+END
+
+IDD_GOTO DIALOGEX 0, 0, 200, 70
+STYLE DS_SHELLFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Go to line"
+FONT 9, "Segoe UI", 400, 0, 0x1
+BEGIN
+    LTEXT           "Line number:", IDC_LBL1, 10, 10, 180, 10
+    EDITTEXT        IDC_LINE, 10, 22, 180, 14, ES_NUMBER | ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "Go", IDOK, 86, 46, 50, 16
+    PUSHBUTTON      "Cancel", IDCANCEL, 140, 46, 50, 16
+END
