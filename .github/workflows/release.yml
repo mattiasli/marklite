@@ -1,0 +1,85 @@
+# Publishes a GitHub release when a version tag is pushed:
+#
+#   git tag v1.0.0 && git push origin v1.0.0
+#
+# The tag must match the VERSION file. The website's download button points at
+# releases/latest/download/MarkLite-Setup.exe, so it serves the new installer as soon as this finishes.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check that the tag matches VERSION
+        shell: bash
+        run: |
+          version="$(tr -d '[:space:]' < VERSION)"
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match VERSION ($version)"
+            exit 1
+          fi
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-make
+
+      - name: Build MarkLite.exe
+        run: mingw32-make -j$(nproc)
+
+      # Code signing is off until a certificate is set up. To turn it on, add the repository
+      # variable SIGN_RELEASES=true and the secrets SIGNING_CERT_PFX_BASE64 and SIGNING_CERT_PASSWORD.
+      # MarkLite.exe is signed before it is packed into the installer, then the installer is signed.
+      - name: Sign MarkLite.exe
+        if: vars.SIGN_RELEASES == 'true'
+        shell: pwsh
+        env:
+          SIGNING_CERT_PFX_BASE64: ${{ secrets.SIGNING_CERT_PFX_BASE64 }}
+          SIGNING_CERT_PASSWORD: ${{ secrets.SIGNING_CERT_PASSWORD }}
+        run: ./.github/scripts/sign.ps1 MarkLite.exe
+
+      - name: Build MarkLite-Setup.exe
+        run: mingw32-make -j$(nproc) installer
+
+      - name: Sign MarkLite-Setup.exe
+        if: vars.SIGN_RELEASES == 'true'
+        shell: pwsh
+        env:
+          SIGNING_CERT_PFX_BASE64: ${{ secrets.SIGNING_CERT_PFX_BASE64 }}
+          SIGNING_CERT_PASSWORD: ${{ secrets.SIGNING_CERT_PASSWORD }}
+        run: ./.github/scripts/sign.ps1 MarkLite-Setup.exe
+
+      - name: Unit tests
+        run: mingw32-make -j$(nproc) test
+
+      - name: Installer smoke test
+        shell: pwsh
+        run: ./tests/installer-smoke.ps1 -Setup MarkLite-Setup.exe -AppExe MarkLite.exe
+
+      - name: Checksums
+        run: sha256sum MarkLite-Setup.exe MarkLite.exe > SHA256SUMS.txt && cat SHA256SUMS.txt
+
+      - name: Publish the release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = $env:GITHUB_REF_NAME.TrimStart('v')
+          gh release create $env:GITHUB_REF_NAME MarkLite-Setup.exe MarkLite.exe SHA256SUMS.txt `
+            --title "MarkLite $version" --generate-notes --verify-tag

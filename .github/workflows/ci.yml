@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    name: App, installer and tests
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-make
+
+      - name: Build MarkLite.exe
+        run: mingw32-make -j$(nproc)
+
+      - name: Build MarkLite-Setup.exe
+        run: mingw32-make -j$(nproc) installer
+
+      - name: Unit tests
+        run: mingw32-make -j$(nproc) test
+
+      - name: Installer smoke test, current user
+        shell: pwsh
+        run: ./tests/installer-smoke.ps1 -Setup MarkLite-Setup.exe -AppExe MarkLite.exe
+
+      - name: Installer smoke test, all users
+        shell: pwsh
+        run: ./tests/installer-smoke.ps1 -Setup MarkLite-Setup.exe -AppExe MarkLite.exe -AllUsers -SkipLaunch
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: MarkLite-${{ github.sha }}
+          path: |
+            MarkLite.exe
+            MarkLite-Setup.exe
+          if-no-files-found: error
+          retention-days: 14
+
+  website:
+    name: Website
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - run: npm ci
+      - name: Type check
+        run: npm run check
+      - name: Build
+        run: npm run build
+      - name: Check the built pages
+        run: npm test
